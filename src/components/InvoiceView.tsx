@@ -139,7 +139,7 @@ export default function InvoiceView() {
             <div className="mt-4">
               <div className="h-20 w-48 mb-2">
                 <img
-                  src="https://github.com/NoTimeInnovations/MDC-bill-generator/blob/main/public/roshan_sign_transparent.png?raw=true"
+                  src="/roshan_sign_transparent.png" // Image from the public folder
                   alt="Signature"
                   className="h-20 w-48 object-cover"
                   onLoad={() => setIsImageLoaded(true)} // Set state to true when image is loaded
