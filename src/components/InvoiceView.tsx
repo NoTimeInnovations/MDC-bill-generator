@@ -5,40 +5,47 @@ import { useInvoiceStore } from '../store/useInvoiceStore';
 import { generatePDF } from '../utils/pdfGenerator';
 
 export default function InvoiceView() {
-  const { id } = useParams();
-  const navigate = useNavigate();
-  const invoice = useInvoiceStore((state) => state.getInvoice(id!));
-  const invoiceRef = useRef<HTMLDivElement>(null);
-  const [isImageLoaded, setIsImageLoaded] = useState(false);
+  const { id } = useParams(); // Get the invoice ID from the URL
+  const navigate = useNavigate(); // Navigation hook
+  const invoice = useInvoiceStore((state) => state.getInvoice(id!)); // Fetch the invoice from the store
+  const invoiceRef = useRef<HTMLDivElement>(null); // Reference to the invoice content for PDF generation
+  const [isImageLoaded, setIsImageLoaded] = useState(false); // State to track if the image is loaded
 
+  // Effect to handle image loading
   useEffect(() => {
     if (invoiceRef.current) {
       const img = invoiceRef.current.querySelector('img');
       if (img) {
-        img.onload = () => setIsImageLoaded(true);
+        img.onload = () => setIsImageLoaded(true); // Set state to true when image is loaded
+        img.onerror = () => console.error('Image failed to load'); // Log error if image fails to load
       }
     }
   }, []);
 
+  // If the invoice is not found, display a message
   if (!invoice) {
     return <div>Invoice not found</div>;
   }
 
+  // Function to handle PDF generation
   const handlePrint = async () => {
     if (invoiceRef.current && isImageLoaded) {
       try {
         await generatePDF(
-          invoiceRef.current, 
+          invoiceRef.current,
           `invoice-${invoice.invoiceNumber}.pdf`
         );
       } catch (error) {
         console.error('Failed to generate PDF:', error);
       }
+    } else {
+      console.error('Image not loaded or invoice reference not available');
     }
   };
 
   return (
     <div className="max-w-4xl mx-auto p-6">
+      {/* Header with back button and download PDF button */}
       <div className="mb-6 flex justify-between items-center no-print">
         <button
           onClick={() => navigate('/invoices')}
@@ -55,7 +62,9 @@ export default function InvoiceView() {
         </button>
       </div>
 
+      {/* Invoice content */}
       <div ref={invoiceRef} className="bg-white rounded-lg shadow-lg p-8">
+        {/* Clinic and invoice details */}
         <div className="flex justify-between items-start mb-8">
           <div>
             <h1 className="text-3xl font-bold text-blue-600">Modern Dental Clinic</h1>
@@ -76,6 +85,7 @@ export default function InvoiceView() {
           </div>
         </div>
 
+        {/* Patient information */}
         <div className="border-t-2 border-b-2 border-blue-100 py-6 mb-6">
           <h3 className="text-lg font-semibold text-blue-600 mb-4">Patient Information</h3>
           <div className="grid grid-cols-2 gap-4">
@@ -90,6 +100,7 @@ export default function InvoiceView() {
           </div>
         </div>
 
+        {/* Treatments table */}
         <div className="mb-6">
           <table className="min-w-full">
             <thead>
@@ -117,20 +128,22 @@ export default function InvoiceView() {
           </table>
         </div>
 
+        {/* Footer with signature */}
         <div className="mt-8 pt-8 border-t border-blue-100 flex justify-between items-end">
           <div className="text-gray-600 text-sm">
             <p className="font-medium text-blue-600">Thank you for choosing Modern Dental Clinic</p>
             <p className="mt-2">For any queries, please contact us at support@moderndental.com</p>
           </div>
-          
           <div className="text-right">
             <p className="text-gray-600">Date: {new Date(invoice.date).toLocaleDateString()}</p>
             <div className="mt-4">
-              <div className="h-20 w-48 border-2 border-dashed border-gray-300 mb-2">
-                <img 
-                  src="https://github.com/NoTimeInnovations/MDC-bill-generator/blob/main/public/roshan_sign_transparent.png?raw=true" 
-                  alt="Signature" 
+              <div className="h-20 w-48 mb-2">
+                <img
+                  src="https://github.com/NoTimeInnovations/MDC-bill-generator/blob/main/public/roshan_sign_transparent.png?raw=true"
+                  alt="Signature"
                   className="h-20 w-48 object-cover"
+                  onLoad={() => setIsImageLoaded(true)} // Set state to true when image is loaded
+                  onError={() => console.error('Image failed to load')} // Log error if image fails to load
                 />
               </div>
               <p className="text-gray-600">Dr. Muhammed Roshan S R</p>
