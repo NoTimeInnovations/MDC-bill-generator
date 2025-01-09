@@ -2,6 +2,8 @@ export interface Treatment {
   id: string;
   name: string;
   price: number;
+  quantity: number;
+  total: number;
 }
 
 export interface Invoice {

@@ -4,7 +4,7 @@ import { Invoice } from '../types';
 
 interface InvoiceStore {
   invoices: Invoice[];
-  addInvoice: (invoice: Omit<Invoice, 'id' | 'invoiceNumber' | 'date'>) => Invoice;
+  addInvoice: (invoice: Omit<Invoice, 'id' | 'invoiceNumber'>) => Invoice;
   getInvoice: (id: string) => Invoice | undefined;
 }
 
@@ -15,7 +15,6 @@ export const useInvoiceStore = create<InvoiceStore>((set, get) => ({
       ...invoiceData,
       id: uuidv4(),
       invoiceNumber: `INV-${Date.now()}`,
-      date: new Date().toISOString(),
     };
     set((state) => ({ invoices: [...state.invoices, newInvoice] }));
     return newInvoice;

@@ -11,20 +11,31 @@ export default function InvoiceForm() {
   const [age, setAge] = useState('');
   const [phoneNumber, setPhoneNumber] = useState('');
   const [opNumber, setOpNumber] = useState('');
+  const [date, setDate] = useState(new Date().toISOString().split('T')[0]);
   const [treatments, setTreatments] = useState<Treatment[]>([]);
-  const [newTreatment, setNewTreatment] = useState({ name: '', price: '' });
+  const [newTreatment, setNewTreatment] = useState({
+    name: '',
+    price: '',
+    quantity: '1'
+  });
 
   const handleAddTreatment = () => {
-    if (newTreatment.name && newTreatment.price) {
+    if (newTreatment.name && newTreatment.price && newTreatment.quantity) {
+      const price = parseFloat(newTreatment.price);
+      const quantity = parseInt(newTreatment.quantity);
+      const total = price * quantity;
+      
       setTreatments([
         ...treatments,
         {
           id: crypto.randomUUID(),
           name: newTreatment.name,
-          price: parseFloat(newTreatment.price),
+          price,
+          quantity,
+          total
         },
       ]);
-      setNewTreatment({ name: '', price: '' });
+      setNewTreatment({ name: '', price: '', quantity: '1' });
     }
   };
 
@@ -32,21 +43,35 @@ export default function InvoiceForm() {
     setTreatments(treatments.filter((t) => t.id !== id));
   };
 
+  const handleTreatmentChange = (id: string, field: string, value: string) => {
+    setTreatments(treatments.map(t => {
+      if (t.id === id) {
+        const updatedTreatment = { ...t, [field]: parseFloat(value) };
+        updatedTreatment.total = updatedTreatment.price * updatedTreatment.quantity;
+        return updatedTreatment;
+      }
+      return t;
+    }));
+  };
+
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    const total = treatments.reduce((sum, t) => sum + t.price, 0);
+    const grandTotal = treatments.reduce((sum, t) => sum + t.total, 0);
     
     const invoice = addInvoice({
       patientName,
       age: parseInt(age),
       phoneNumber,
       opNumber,
+      date,
       treatments,
-      total,
+      total: grandTotal,
     });
 
     navigate(`/invoice/${invoice.id}`);
   };
+
+  const grandTotal = treatments.reduce((sum, t) => sum + t.total, 0);
 
   return (
     <div className="max-w-4xl mx-auto p-4 sm:p-6">
@@ -93,6 +118,16 @@ export default function InvoiceForm() {
               className="px-1 mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
             />
           </div>
+          <div>
+            <label className="block text-sm font-medium text-gray-700">Date</label>
+            <input
+              type="date"
+              required
+              value={date}
+              onChange={(e) => setDate(e.target.value)}
+              className="px-1 mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
+            />
+          </div>
         </div>
 
         <div className="mt-8">
@@ -110,7 +145,14 @@ export default function InvoiceForm() {
               placeholder="Price"
               value={newTreatment.price}
               onChange={(e) => setNewTreatment({ ...newTreatment, price: e.target.value })}
-              className="px-1 w-full sm:w-32 rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
+              className="px-1 w-24 rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
+            />
+            <input
+              type="number"
+              placeholder="Qty"
+              value={newTreatment.quantity}
+              onChange={(e) => setNewTreatment({ ...newTreatment, quantity: e.target.value })}
+              className="px-1 w-20 rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
             />
             <button
               type="button"
@@ -132,6 +174,12 @@ export default function InvoiceForm() {
                     Price
                   </th>
                   <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    Quantity
+                  </th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    Total
+                  </th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                     Action
                   </th>
                 </tr>
@@ -139,8 +187,31 @@ export default function InvoiceForm() {
               <tbody className="bg-white divide-y divide-gray-200">
                 {treatments.map((treatment) => (
                   <tr key={treatment.id}>
-                    <td className="px-6 py-4 whitespace-nowrap">{treatment.name}</td>
-                    <td className="px-6 py-4 whitespace-nowrap">₹{treatment.price}</td>
+                    <td className="px-6 py-4 whitespace-nowrap">
+                      <input
+                        type="text"
+                        value={treatment.name}
+                        onChange={(e) => handleTreatmentChange(treatment.id, 'name', e.target.value)}
+                        className="w-full px-2 py-1 border rounded-md"
+                      />
+                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap">
+                      <input
+                        type="number"
+                        value={treatment.price}
+                        onChange={(e) => handleTreatmentChange(treatment.id, 'price', e.target.value)}
+                        className="w-24 px-2 py-1 border rounded-md"
+                      />
+                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap">
+                      <input
+                        type="number"
+                        value={treatment.quantity}
+                        onChange={(e) => handleTreatmentChange(treatment.id, 'quantity', e.target.value)}
+                        className="w-20 px-2 py-1 border rounded-md"
+                      />
+                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap">₹{treatment.total.toFixed(2)}</td>
                     <td className="px-6 py-4 whitespace-nowrap">
                       <button
                         type="button"
@@ -154,6 +225,12 @@ export default function InvoiceForm() {
                 ))}
               </tbody>
             </table>
+          </div>
+
+          <div className="mt-6 text-right">
+            <div className="text-lg font-semibold text-gray-800">
+              Grand Total: ₹{grandTotal.toFixed(2)}
+            </div>
           </div>
         </div>
 

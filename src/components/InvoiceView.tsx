@@ -51,6 +51,11 @@ export default function InvoiceView() {
             <p className="text-gray-600 mt-1">INTUC Jn, Nettoor, Maradu</p>
             <p className="text-gray-600">Ernakulam, Kerala 682040</p>
             <p className="text-gray-600">Phone: +91 8304842300</p>
+            <div className="mt-4">
+              <p className="text-gray-600 font-medium">Dr. Muhammed Roshan S R</p>
+              <p className="text-gray-600">BDS, FICOI (USA)</p>
+              <p className="text-gray-600">Registration No: 27128</p>
+            </div>
           </div>
           <div className="text-right">
             <h2 className="text-xl font-bold text-blue-600">{invoice.invoiceNumber}</h2>
@@ -80,26 +85,41 @@ export default function InvoiceView() {
               <tr className="bg-blue-50">
                 <th className="text-left py-3 px-4 text-blue-600">Treatment</th>
                 <th className="text-right py-3 px-4 text-blue-600">Price</th>
+                <th className="text-right py-3 px-4 text-blue-600">Quantity</th>
+                <th className="text-right py-3 px-4 text-blue-600">Total</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-blue-100">
               {invoice.treatments.map((treatment) => (
                 <tr key={treatment.id}>
                   <td className="py-3 px-4 text-gray-800">{treatment.name}</td>
-                  <td className="text-right py-3 px-4 text-gray-800">₹{treatment.price}</td>
+                  <td className="text-right py-3 px-4 text-gray-800">₹{treatment.price.toFixed(2)}</td>
+                  <td className="text-right py-3 px-4 text-gray-800">{treatment.quantity}</td>
+                  <td className="text-right py-3 px-4 text-gray-800">₹{treatment.total.toFixed(2)}</td>
                 </tr>
               ))}
               <tr className="font-bold bg-blue-50">
-                <td className="py-3 px-4 text-blue-600">Total</td>
-                <td className="text-right py-3 px-4 text-blue-600">₹{invoice.total}</td>
+                <td colSpan={3} className="py-3 px-4 text-blue-600">Grand Total</td>
+                <td className="text-right py-3 px-4 text-blue-600">₹{invoice.total.toFixed(2)}</td>
               </tr>
             </tbody>
           </table>
         </div>
 
-        <div className="text-center text-gray-600 text-sm mt-8 pt-8 border-t border-blue-100">
-          <p className="font-medium text-blue-600">Thank you for choosing Modern Dental Clinic</p>
-          <p className="mt-2">For any queries, please contact us at support@moderndental.com</p>
+        <div className="mt-8 pt-8 border-t border-blue-100 flex justify-between items-end">
+          <div className="text-gray-600 text-sm">
+            <p className="font-medium text-blue-600">Thank you for choosing Modern Dental Clinic</p>
+            <p className="mt-2">For any queries, please contact us at support@moderndental.com</p>
+          </div>
+          
+          <div className="text-right">
+            <p className="text-gray-600">Date: {new Date(invoice.date).toLocaleDateString()}</p>
+            <div className="mt-4">
+              <div className="h-20 w-48 border-2 border-dashed border-gray-300 mb-2"></div>
+              <p className="text-gray-600">Modern Dental Clinic</p>
+              <p className="text-gray-600">Dr. Muhammed Roshan S R</p>
+            </div>
+          </div>
         </div>
       </div>
     </div>
