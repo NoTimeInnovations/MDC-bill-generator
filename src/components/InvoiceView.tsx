@@ -146,7 +146,7 @@ export default function InvoiceView() {
                   onError={() => console.error('Image failed to load')} // Log error if image fails to load
                 />
               </div>
-              <p className="text-gray-600">Dr. Muhammed Roshan S R</p>
+              <p className="text-gray-600">Dr. Muhammed Roshan</p>
             </div>
           </div>
         </div>
