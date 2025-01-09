@@ -115,7 +115,13 @@ export default function InvoiceView() {
           <div className="text-right">
             <p className="text-gray-600">Date: {new Date(invoice.date).toLocaleDateString()}</p>
             <div className="mt-4">
-              <div className="h-20 w-48 border-2 border-dashed border-gray-300 mb-2"></div>
+              <div className="h-20 w-48 border-2 border-dashed border-gray-300 mb-2">
+								<img 
+	                src="https://github.com/NoTimeInnovations/MDC-bill-generator/blob/main/public/roshan_sign_transparent.png?raw=true" 
+	                alt="Signature" 
+	                className="h-20 w-48 object-contain"
+              	/>
+							</div>
               <p className="text-gray-600">Modern Dental Clinic</p>
               <p className="text-gray-600">Dr. Muhammed Roshan S R</p>
             </div>
