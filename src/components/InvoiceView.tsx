@@ -122,7 +122,6 @@ export default function InvoiceView() {
 	                className="h-20 w-48 object-cover"
               	/>
 							</div>
-              <p className="text-gray-600">Modern Dental Clinic</p>
               <p className="text-gray-600">Dr. Muhammed Roshan S R</p>
             </div>
           </div>
