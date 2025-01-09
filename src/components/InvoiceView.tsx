@@ -119,7 +119,7 @@ export default function InvoiceView() {
 								<img 
 	                src="https://github.com/NoTimeInnovations/MDC-bill-generator/blob/main/public/roshan_sign_transparent.png?raw=true" 
 	                alt="Signature" 
-	                className="h-20 w-48 object-contain"
+	                className="h-20 w-48 object-cover"
               	/>
 							</div>
               <p className="text-gray-600">Modern Dental Clinic</p>
