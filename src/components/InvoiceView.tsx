@@ -1,4 +1,4 @@
-import React, { useRef } from 'react';
+import React, { useRef, useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { ArrowLeft, Printer } from 'lucide-react';
 import { useInvoiceStore } from '../store/useInvoiceStore';
@@ -9,13 +9,23 @@ export default function InvoiceView() {
   const navigate = useNavigate();
   const invoice = useInvoiceStore((state) => state.getInvoice(id!));
   const invoiceRef = useRef<HTMLDivElement>(null);
+  const [isImageLoaded, setIsImageLoaded] = useState(false);
+
+  useEffect(() => {
+    if (invoiceRef.current) {
+      const img = invoiceRef.current.querySelector('img');
+      if (img) {
+        img.onload = () => setIsImageLoaded(true);
+      }
+    }
+  }, []);
 
   if (!invoice) {
     return <div>Invoice not found</div>;
   }
 
   const handlePrint = async () => {
-    if (invoiceRef.current) {
+    if (invoiceRef.current && isImageLoaded) {
       try {
         await generatePDF(
           invoiceRef.current, 
@@ -38,7 +48,8 @@ export default function InvoiceView() {
         </button>
         <button
           onClick={handlePrint}
-          className="flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700"
+          disabled={!isImageLoaded}
+          className="flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 disabled:opacity-50"
         >
           <Printer size={20} /> Download PDF
         </button>
@@ -115,13 +126,13 @@ export default function InvoiceView() {
           <div className="text-right">
             <p className="text-gray-600">Date: {new Date(invoice.date).toLocaleDateString()}</p>
             <div className="mt-4">
-              <div className="h-20 w-48 mb-2">
-								<img 
-	                src="https://github.com/NoTimeInnovations/MDC-bill-generator/blob/main/public/roshan_sign_transparent.png?raw=true" 
-	                alt="Signature" 
-	                className="h-20 w-48 object-cover"
-              	/>
-							</div>
+              <div className="h-20 w-48 border-2 border-dashed border-gray-300 mb-2">
+                <img 
+                  src="https://github.com/NoTimeInnovations/MDC-bill-generator/blob/main/public/roshan_sign_transparent.png?raw=true" 
+                  alt="Signature" 
+                  className="h-20 w-48 object-cover"
+                />
+              </div>
               <p className="text-gray-600">Dr. Muhammed Roshan S R</p>
             </div>
           </div>
